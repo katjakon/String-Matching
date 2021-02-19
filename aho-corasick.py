@@ -9,6 +9,7 @@ class AhoCorasick:
 
     def __init__(self, keywords):
         self.keywords = keywords
+        self.sigma = {char for word in keywords for char in word}
         self._goto = dict()
         self.output = dict()
         self.fail = dict()
@@ -16,11 +17,9 @@ class AhoCorasick:
 
         self.__construct()
 
-
     def __construct(self):
         self.__construct_goto()
         self.__construct_fail()
-
 
     def goto(self, state, char):
         if state in self._goto:
@@ -29,7 +28,6 @@ class AhoCorasick:
             elif char in self._goto[state]:
                 return self._goto[state][char]
         return False
-
 
     def __construct_goto(self):
         # Construct goto function and partial output function.
@@ -47,20 +45,15 @@ class AhoCorasick:
             self.output.setdefault(state, set()).add(word)
 
     def __construct_fail(self):
-        chars = set()
-        for word in self.keywords:
-            word = set(word)
-            chars.update(word)
-        chars = list(chars)
         # Construct failure function and final output function.
         queue = []
-        for char in chars:
+        for char in self.sigma:
             if self.goto(0, char) is not False and self.goto(0, char) != 0:
                 queue.append(self.goto(0, char))
                 self.fail[self.goto(0, char)] = 0
         while queue:
             state = queue.pop(0)
-            for char in chars:
+            for char in self.sigma:
                 if self.goto(state, char) is not False:
                     out = self.goto(state, char)
                     queue.append(out)
@@ -82,6 +75,7 @@ class AhoCorasick:
                 for out in self.output[state]:
                     print(out, start+i-len(out)+1)
 
-a = AhoCorasick(["he", "she", "his", "hers"])
-print(a.match_pattern("123ushersgg", index=0))
 
+a = AhoCorasick(["hello", "ello"])
+print(a.match_pattern("hello my name is katja", start=0))
+print(a.output)
