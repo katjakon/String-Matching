@@ -5,31 +5,20 @@ Created on Thu Feb 18 15:33:24 2021
 @author: HP I5
 """
 
+
 class AhoCorasick:
 
-    def __init__(self, keywords):
+    def __init__(self, keywords=None):
         self.keywords = keywords
-        self.sigma = {char for word in keywords for char in word}
         self._goto = dict()
         self.output = dict()
         self.fail = dict()
-        self.next = dict()
 
-        self.__construct()
+        if keywords is not None:
+            self.sigma = {char for word in keywords for char in word}
+            self.__construct_functions()
 
-    def __construct(self):
-        self.__construct_goto()
-        self.__construct_fail()
-
-    def goto(self, state, char):
-        if state in self._goto:
-            if state == 0 and char not in self._goto[state]:
-                return 0
-            elif char in self._goto[state]:
-                return self._goto[state][char]
-        return False
-
-    def __construct_goto(self):
+    def __construct_functions(self):
         # Construct goto function and partial output function.
         newstate = 0
         for word in self.keywords:
@@ -43,14 +32,13 @@ class AhoCorasick:
                     self._goto[state][char] = newstate
                     state = newstate
             self.output.setdefault(state, set()).add(word)
-
-    def __construct_fail(self):
         # Construct failure function and final output function.
         queue = []
         for char in self.sigma:
-            if self.goto(0, char) is not False and self.goto(0, char) != 0:
-                queue.append(self.goto(0, char))
-                self.fail[self.goto(0, char)] = 0
+            out = self.goto(0, char)
+            if out is not False and out != 0:
+                queue.append(out)
+                self.fail[out] = 0
         while queue:
             state = queue.pop(0)
             for char in self.sigma:
@@ -65,7 +53,16 @@ class AhoCorasick:
                     if self.fail[out] in self.output:
                         self.output[out] = output.union(self.output[self.fail[out]])
 
+    def goto(self, state, char):
+        if state in self._goto:
+            if state == 0 and char not in self._goto[state]:
+                return 0
+            elif char in self._goto[state]:
+                return self._goto[state][char]
+        return False
+
     def match_pattern(self, input_text, start=0):
+        output = dict()
         state = 0
         for i, char in enumerate(input_text):
             while self.goto(state, char) is False:
@@ -73,9 +70,10 @@ class AhoCorasick:
             state = self.goto(state, char)
             if state in self.output:
                 for out in self.output[state]:
-                    print(out, start+i-len(out)+1)
+                    output.setdefault(out, set())
+                    output[out].add(start+i-len(out)+1)
+        return output
 
 
-a = AhoCorasick(["hello", "ello"])
-print(a.match_pattern("hello my name is katja", start=0))
-print(a.output)
+a = AhoCorasick(["a", "ab", "bab", "bc", "bca", "c", "caa"])
+print(a.match_pattern("abccab", start=0))
