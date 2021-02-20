@@ -6,16 +6,20 @@ Created on Thu Feb 18 15:33:24 2021
 """
 
 
-class AhoCorasick:
+class StringMatching:
 
-    def __init__(self, keywords=None):
+    ALGORITHMS = ("aho-corasick", "naive")
+
+    def __init__(self, alogrithm, keywords):
         self.keywords = keywords
-        self._goto = dict()
-        self.output = dict()
-        self.fail = dict()
+        self.algorithm = alogrithm
 
-        if keywords is not None:
+
+        if self.algorithm == "aho-corasick":
             self.sigma = {char for word in keywords for char in word}
+            self._goto = dict()
+            self.output = dict()
+            self.fail = dict()
             self.__construct_functions()
 
     def __construct_functions(self):
@@ -61,7 +65,7 @@ class AhoCorasick:
                 return self._goto[state][char]
         return False
 
-    def match_pattern(self, input_text, start=0):
+    def _aho_corasick_match(self, input_text, start=0):
         output = dict()
         state = 0
         for i, char in enumerate(input_text):
@@ -74,6 +78,23 @@ class AhoCorasick:
                     output[out].add(start+i-len(out)+1)
         return output
 
+    def _naive_match(self, input_text, start=0):
+        matches = dict()
+        for i, char in enumerate(input_text):
+            for word in self.keywords:
+                if word == input_text[i:i+len(word)]:
+                    matches.setdefault(word, set())
+                    matches[word].add(start+i)
+        return matches
 
-a = AhoCorasick(["a", "ab", "bab", "bc", "bca", "c", "caa"])
-print(a.match_pattern("abccab", start=0))
+    def match_pattern(self, input_text, start=0):
+        matches = dict()
+        if self.algorithm == "aho-corasick":
+            matches = self._aho_corasick_match(input_text, start=start)
+        elif self.algorithm == "naive":
+            matches = self._naive_match(input_text, start=start)
+        return matches
+
+if __name__ == "__main__":
+    s = StringMatching("naive", ["he"])
+    print(s.match_pattern("ushers"))
