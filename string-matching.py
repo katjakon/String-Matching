@@ -13,13 +13,15 @@ class StringMatching:
     def __init__(self, alogrithm, keywords):
         self.keywords = keywords
         self.algorithm = alogrithm
+        self.sigma = {char for word in keywords for char in word}
+        self._goto = dict()
+        self.output = dict()
+        self.fail = dict()
 
+        if self.algorithm not in self.ALGORITHMS:
+            raise NotImplementedError("Matching algorithm not implemented")
 
         if self.algorithm == "aho-corasick":
-            self.sigma = {char for word in keywords for char in word}
-            self._goto = dict()
-            self.output = dict()
-            self.fail = dict()
             self.__construct_functions()
 
     def __construct_functions(self):
@@ -95,6 +97,12 @@ class StringMatching:
             matches = self._naive_match(input_text, start=start)
         return matches
 
+
 if __name__ == "__main__":
-    s = StringMatching("naive", ["he"])
-    print(s.match_pattern("ushers"))
+    words = ["hallo", "lol"]
+    text = "hallol"
+    s = StringMatching("naive", words)
+    print(s.match_pattern(text))
+    s = StringMatching("aho-corasick", words)
+    print(s.fail)
+    print(s.match_pattern(text))
