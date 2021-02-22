@@ -10,10 +10,9 @@ class StringMatching:
 
     ALGORITHMS = ("aho-corasick", "naive")
 
-    def __init__(self, alogrithm, keywords):
+    def __init__(self, alogrithm, keywords=None):
         self.keywords = keywords
         self.algorithm = alogrithm
-        self.sigma = {char for word in keywords for char in word}
         self._goto = dict()
         self.output = dict()
         self.fail = dict()
@@ -21,7 +20,7 @@ class StringMatching:
         if self.algorithm not in self.ALGORITHMS:
             raise NotImplementedError("Matching algorithm not implemented")
 
-        if self.algorithm == "aho-corasick":
+        if self.algorithm == "aho-corasick" and self.keywords is not None:
             self.__construct_functions()
 
     def __construct_functions(self):
@@ -39,15 +38,16 @@ class StringMatching:
                     state = newstate
             self.output.setdefault(state, set()).add(word)
         # Construct failure function and final output function.
+        sigma = {char for word in self.keywords for char in word}
         queue = []
-        for char in self.sigma:
+        for char in sigma:
             out = self.goto(0, char)
             if out is not False and out != 0:
                 queue.append(out)
                 self.fail[out] = 0
         while queue:
             state = queue.pop(0)
-            for char in self.sigma:
+            for char in sigma:
                 if self.goto(state, char) is not False:
                     out = self.goto(state, char)
                     queue.append(out)
@@ -97,12 +97,25 @@ class StringMatching:
             matches = self._naive_match(input_text, start=start)
         return matches
 
+    @classmethod
+    def set_functions(cls, goto, fail, output, algorithm="aho-corasick"):
+        string_match = cls(algorithm)
+        if algorithm == "aho-corasick":
+            string_match._goto = goto
+            string_match.fail = fail
+            string_match.output = output
+        return string_match
+
 
 if __name__ == "__main__":
-    words = ["hallo", "lol"]
-    text = "hallol"
-    s = StringMatching("naive", words)
-    print(s.match_pattern(text))
+    words = ["she", "he", "hers", "her"]
+    text = "ushers"
     s = StringMatching("aho-corasick", words)
+    print(s._goto)
     print(s.fail)
-    print(s.match_pattern(text))
+    print(s.output)
+    g = {0: {'s': 1, 'h': 4}, 1: {'h': 2}, 2: {'e': 3}, 4: {'e': 5}, 5: {'r': 6}, 6: {'s': 7}}
+    f = {1: 0, 4: 0, 2: 4, 5: 0, 3: 5, 6: 0, 7: 1}
+    o = {3: {'she', 'he'}, 5: {'he'}, 7: {'hers'}, 6: {'her'}}
+    t = StringMatching.set_functions(g, f, o)
+    print(t.match_pattern(text))
