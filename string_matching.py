@@ -11,7 +11,7 @@ class StringMatching:
     ALGORITHMS = ("aho-corasick", "naive")
 
     def __init__(self, alogrithm, keywords=None):
-        self.keywords = keywords
+        self._keywords = keywords
         self.algorithm = alogrithm
         self._goto = dict()
         self.output = dict()
@@ -22,6 +22,10 @@ class StringMatching:
 
         if self.algorithm == "aho-corasick" and self.keywords is not None:
             self.__construct_functions()
+
+    @property
+    def keywords(self):
+        return self._keywords
 
     def __construct_functions(self):
         # Construct goto function and partial output function.
@@ -108,7 +112,7 @@ class StringMatching:
 
 
 if __name__ == "__main__":
-    words = ["she", "he", "hers", "her"]
+    words = ["she", "he", "hers", "her", "his"]
     text = "ushers"
     s = StringMatching("aho-corasick", words)
     print(s._goto)
