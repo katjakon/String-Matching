@@ -39,20 +39,21 @@ class Search:
 
     def _match_in_file(self, match):
         with open(self.text, encoding="utf-8") as file_in:
-            count = 1
-            at = 0
-            matches = dict()
-            for line in file_in:
-                if self.v:
+            if self.v:
+                count = 1
+                for line in file_in:
                     matches = match.match_pattern(line)
                     if matches:
                         print(count)
                         self.print_matches(matches)
-                else:
+                    count += 1
+            else:
+                at = 0
+                matches = dict()
+                for line in file_in:
                     matches = match.match_pattern(line, start=at, matches=matches)
                     at += len(line)
-                count += 1
-            self.print_matches(matches)
+                self.print_matches(matches)
 
     def _match_in_dir(self):
         pass
