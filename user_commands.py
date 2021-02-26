@@ -35,7 +35,8 @@ class Search:
             return True
         return False
 
-    def print_matches(self, match_dict):
+    @staticmethod
+    def print_matches(match_dict):
         for match in match_dict:
             print("{}: {}".format(match,
                                   ",".join([str(i) for i in match_dict[match]])))
@@ -70,10 +71,10 @@ class Search:
             path = os.path.join(self.text, file)
             self._match_in_file(match, path)
 
-    def _match_in_str(self, match, text, at=0):
+    def _match_in_str(self, match, text):
         if self.i:
             text = text.lower()
-        matches = match.match_pattern(text, start=at)
+        matches = match.match_pattern(text)
         self.print_matches(matches)
 
     def _pattern_from_file(self):
