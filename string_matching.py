@@ -10,9 +10,9 @@ class StringMatching:
 
     ALGORITHMS = ("aho-corasick", "naive")
 
-    def __init__(self, alogrithm, keywords=None):
+    def __init__(self, algorithm="aho-corasick", keywords=None):
         self._keywords = keywords
-        self.algorithm = alogrithm
+        self.algorithm = algorithm
         self._goto = dict()
         self.output = dict()
         self.fail = dict()
@@ -84,8 +84,9 @@ class StringMatching:
                     output[out].add(start+i-len(out)+1)
         return output
 
-    def _naive_match(self, input_text, start=0):
-        matches = dict()
+    def _naive_match(self, input_text, start=0, matches=None):
+        if matches is None:
+            matches = dict()
         for i, char in enumerate(input_text):
             for word in self.keywords:
                 if word == input_text[i:i+len(word)]:
