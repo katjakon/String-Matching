@@ -7,6 +7,8 @@ Created on Wed Feb 24 14:54:52 2021
 
 import argparse
 
+from user_commands import Search
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -23,4 +25,18 @@ def main():
     search_p.add_argument("input_text")
     args = parser.parse_args()
     if args.command == "search":
-        pass
+        search = Search(pattern=args.pattern,
+                        pattern_file=args.pattern_file,
+                        text=args.input_text,
+                        i=args.i,
+                        v=args.v,
+                        n=args.n)
+        try:
+            search.run()
+        except OSError as e:
+            print(e)
+            parser.print_help()
+
+
+if __name__ == "__main__":
+    main()
