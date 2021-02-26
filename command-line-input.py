@@ -4,7 +4,7 @@ Created on Mon Feb 22 12:12:37 2021
 
 @author: HP I5
 """
-import string_matching
+from string_matching import StringMatching
 
 class Search:
 
@@ -22,13 +22,13 @@ class Search:
 
     @property
     def input_from_file(self):
-        if self.input_text.endswith(self.INPUT_EXT):
+        if self.text.endswith(self.INPUT_EXT):
             return True
         return False
 
     @property
     def input_from_dir(self):
-        if self.input_text.endswith(self.DIRS):
+        if self.text.endswith(self.DIRS):
             return True
         return False
 
@@ -38,9 +38,35 @@ class Search:
     def _match_in_dir(self):
         pass
 
+    def _match_in_str(self, match, text, at=0):
+        if self.i:
+            text = text.lower()
+        matches = match.match_pattern(text, start=at)
+        for match in matches:
+            print("{}: {}".format(match,
+                                  ",".join([str(i) for i in matches[match]])))
+
     def _pattern_from_file(self):
         pass
 
     def run(self):
-        if self.pattern:
-            
+        alg = "aho-corasick"
+        if self.n:
+            alg = "naive"
+        if self.pattern_file:
+            pattern = self._pattern_from_file()
+        else:
+            pattern = self.pattern
+        if self.i:
+            pattern = [keyword.lower() for keyword in pattern]
+        match = StringMatching(algorithm=alg, keywords=pattern)
+        if self.input_from_file:
+            self._match_in_file()
+        elif self.input_from_dir:
+            self._match_in_dir()
+        else:
+            self._match_in_str(match, self.text)
+
+if __name__ == "__main__":
+    s = Search(["she", "he","hers", "his"], None, "ushershe", False, False, False)
+    s.run()
