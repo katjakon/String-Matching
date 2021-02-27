@@ -18,7 +18,7 @@ class Search:
     def __init__(self, pattern, pattern_file, text, i, v, n):
         self.pattern = pattern
         self.pattern_file = pattern_file
-        self.text = text
+        self.input = text
         self.i = i
         self.v = v
         self.n = n
@@ -36,13 +36,13 @@ class Search:
 
     @property
     def input_from_file(self):
-        if self.text.endswith(self.INPUT_EXT):
+        if self.input.endswith(self.INPUT_EXT):
             return True
         return False
 
     @property
     def input_from_dir(self):
-        if self.text.endswith(self.DIRS):
+        if self.input.endswith(self.DIRS):
             return True
         return False
 
@@ -54,7 +54,7 @@ class Search:
 
     def _match_in_file(self, file=None):
         if file is None:
-            file = self.text
+            file = self.input
         path = os.path.join(file)
         with open(path, encoding="utf-8") as file_in:
             if self.v:
@@ -78,16 +78,16 @@ class Search:
                 self.print_matches(matches)
 
     def _match_in_dir(self):
-        files = [file for file in os.listdir(self.text) if file.endswith(self.INPUT_EXT)]
+        files = [file for file in os.listdir(self.input) if file.endswith(self.INPUT_EXT)]
         for file in files:
             print(file)
-            path = os.path.join(self.text, file)
+            path = os.path.join(self.input, file)
             self._match_in_file(path)
 
     def _match_in_str(self):
         if self.i:
-            self.text = self.text.lower()
-        matches = self.match.match_pattern(self.text)
+            self.input = self.input.lower()
+        matches = self.match.match_pattern(self.input)
         self.print_matches(matches)
 
     def _pattern_from_file(self):
@@ -103,5 +103,5 @@ class Search:
 
 
 if __name__ == "__main__":
-    s = Search(["she", "he","hers", "his"], None, "demo/", False, True, False)
+    s = Search(["she", "he","hers", "his"], None, "ushers", False, True, False)
     s.run()

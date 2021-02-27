@@ -71,8 +71,9 @@ class StringMatching:
                 return self._goto[state][char]
         return False
 
-    def _aho_corasick_match(self, input_text, start=0):
-        output = dict()
+    def _aho_corasick_match(self, input_text, start=0, matches=None):
+        if matches is None:
+            matches = dict()
         state = 0
         for i, char in enumerate(input_text):
             while self.goto(state, char) is False:
@@ -80,9 +81,9 @@ class StringMatching:
             state = self.goto(state, char)
             if state in self.output:
                 for out in self.output[state]:
-                    output.setdefault(out, set())
-                    output[out].add(start+i-len(out)+1)
-        return output
+                    matches.setdefault(out, set())
+                    matches[out].add(start+i-len(out)+1)
+        return matches
 
     def _naive_match(self, input_text, start=0, matches=None):
         if matches is None:
@@ -94,12 +95,13 @@ class StringMatching:
                     matches[word].add(start+i)
         return matches
 
-    def match_pattern(self, input_text, start=0):
-        matches = dict()
+    def match_pattern(self, input_text, start=0, matches=None):
+        if matches is None:
+            matches = dict()
         if self.algorithm == "aho-corasick":
-            matches = self._aho_corasick_match(input_text, start=start)
+            matches = self._aho_corasick_match(input_text, start=start, matches=matches)
         elif self.algorithm == "naive":
-            matches = self._naive_match(input_text, start=start)
+            matches = self._naive_match(input_text, start=start, matches=matches)
         return matches
 
     @classmethod
