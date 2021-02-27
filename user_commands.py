@@ -22,6 +22,17 @@ class Search:
         self.i = i
         self.v = v
         self.n = n
+        self.match = self._create_match()
+
+    def _create_match(self):
+        if self.pattern_file:
+            return self.pattern_from_file()
+        alg = "aho-corasick"
+        if self.n:
+            alg = "naive"
+        if self.i:
+            self.pattern = [pattern.lower() for pattern in self.pattern]
+        return StringMatching(algorithm=alg, keywords=self.pattern)
 
     @property
     def input_from_file(self):
@@ -41,7 +52,9 @@ class Search:
             print("{}: {}".format(match,
                                   ",".join([str(i) for i in match_dict[match]])))
 
-    def _match_in_file(self, match, file):
+    def _match_in_file(self, file=None):
+        if file is None:
+            file = self.text
         path = os.path.join(file)
         with open(path, encoding="utf-8") as file_in:
             if self.v:
@@ -49,7 +62,7 @@ class Search:
                 for line in file_in:
                     if self.i:
                         line = line.lower()
-                    matches = match.match_pattern(line)
+                    matches = self.match.match_pattern(line)
                     if matches:
                         print("line {}".format(count))
                         self.print_matches(matches)
@@ -60,44 +73,35 @@ class Search:
                 for line in file_in:
                     if self.i:
                         line = line.lower()
-                    matches = match.match_pattern(line, start=at, matches=matches)
+                    matches = self.match.match_pattern(line, start=at, matches=matches)
                     at += len(line)
                 self.print_matches(matches)
 
-    def _match_in_dir(self, match):
+    def _match_in_dir(self):
         files = [file for file in os.listdir(self.text) if file.endswith(self.INPUT_EXT)]
         for file in files:
             print(file)
             path = os.path.join(self.text, file)
-            self._match_in_file(match, path)
+            self._match_in_file(path)
 
-    def _match_in_str(self, match, text):
+    def _match_in_str(self):
         if self.i:
-            text = text.lower()
-        matches = match.match_pattern(text)
+            self.text = self.text.lower()
+        matches = self.match.match_pattern(self.text)
         self.print_matches(matches)
 
     def _pattern_from_file(self):
         pass
 
     def run(self):
-        alg = "aho-corasick"
-        if self.n:
-            alg = "naive"
-        if self.pattern_file:
-            pattern = self._pattern_from_file()
-        else:
-            pattern = self.pattern
-        if self.i:
-            pattern = [keyword.lower() for keyword in pattern]
-        match = StringMatching(algorithm=alg, keywords=pattern)
         if self.input_from_file:
-            self._match_in_file(match, self.text)
+            self._match_in_file()
         elif self.input_from_dir:
-            self._match_in_dir(match)
+            self._match_in_dir()
         else:
-            self._match_in_str(match, self.text)
+            self._match_in_str()
+
 
 if __name__ == "__main__":
-    s = Search(["she", "he","hers", "his"], None, "demo/", False, False, False)
+    s = Search(["she", "he","hers", "his"], None, "demo/", False, True, False)
     s.run()
