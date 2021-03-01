@@ -14,13 +14,19 @@ class Search:
     INPUT_EXT = (".txt")
     PATTERN_EXT = (".json")
     DIRS = ("\\", "/")
-    DEMOS = ({"pattern": ["she", "he", "his", "her"],
+    DEMOS = ({"pattern": ["he"],
               "input_text": "She saw her.",
               "pattern_file": None},
-             {"pattern": ["she", "he", "his", "her"],
+             {"pattern": ["she"],
+              "input_text": "She saw her.",
+              "pattern_file": None},
+             {"pattern": ["she"],
               "input_text": "She saw her.",
               "pattern_file": None,
               "i": True},
+             {"pattern": ["her", "he"],
+              "input_text": "She saw her.",
+              "pattern_file": None},
              {"pattern": ["she", "he", "his", "her"],
               "input_text": "She saw her.",
               "pattern_file": None,
@@ -61,10 +67,15 @@ class Search:
         if self.n:
             commands += "-n "
         if self.pattern:
-            commands += '--pattern "{}" ' .format(" ".join(self.pattern))
+            commands += "--pattern "
+            for pattern in self.pattern:
+                commands += '"{}" '.format(pattern)
         else:
             commands += "--pattern_file {} ".format(self.pattern_file)
-        commands += '"{}"'.format(self.input)
+        if self.input_from_dir or self.input_from_file:
+            commands += self.input
+        else:
+            commands += '"{}"'.format(self.input)
         return commands
 
     def _create_match(self):
@@ -110,7 +121,8 @@ class Search:
                 if self.v:
                     matches = self.match.match_pattern(line)
                     if matches:
-                        print("line {}".format(count))
+                        line_str = "Line {}".format(count)
+                        print("{:-^30}".format(line_str))
                         self.print_matches(matches)
                 else:
                     matches = self.match.match_pattern(line,
@@ -125,7 +137,7 @@ class Search:
         files = [file for file in os.listdir(self.input)
                  if file.endswith(self.INPUT_EXT)]
         for file in files:
-            print(file)
+            print("{:=^30}".format(file))
             path = os.path.join(self.input, file)
             self._match_in_file(path)
 
@@ -152,7 +164,11 @@ class Search:
             s = cls(**demo)
             print(s)
             s.run()
+            print("-"*60)
 
 
 if __name__ == "__main__":
     s = Search.demo()
+    with open("demo/demo1.txt") as f:
+        content = f.read()
+        print(content[14:18])
