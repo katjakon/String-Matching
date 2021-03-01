@@ -18,10 +18,14 @@ class StringMatching:
         self.fail = dict()
 
         if self.algorithm not in self.ALGORITHMS:
-            raise NotImplementedError("Matching algorithm not implemented")
+            raise NotImplementedError("Matching algorithm not implemented.")
 
-        if self.algorithm == "aho-corasick" and self.keywords is not None:
-            self.__construct_functions()
+        if self.keywords is not None:
+            if "" in self.keywords:
+                raise ValueError("Invalid Keyword:"
+                                 "Can't search for empty string.")
+            if self.algorithm == "aho-corasick":
+                self.__construct_functions()
 
     @property
     def keywords(self):
@@ -115,14 +119,17 @@ class StringMatching:
 
 
 if __name__ == "__main__":
-    words = ["she", "he", "hers", "her", "his"]
+    words = [""]
     text = "ushers"
-    s = StringMatching("aho-corasick", words)
-    print(s._goto)
-    print(s.fail)
-    print(s.output)
-    g = {0: {'s': 1, 'h': 4}, 1: {'h': 2}, 2: {'e': 3}, 4: {'e': 5}, 5: {'r': 6}, 6: {'s': 7}}
-    f = {1: 0, 4: 0, 2: 4, 5: 0, 3: 5, 6: 0, 7: 1}
-    o = {3: {'she', 'he'}, 5: {'he'}, 7: {'hers'}, 6: {'her'}}
-    t = StringMatching.set_functions(g, f, o)
-    print(t.match_pattern(text))
+    try:
+        s = StringMatching("aho-corasick", words)
+    except ValueError as e:
+        print(e)
+    # print(s._goto)
+    # print(s.fail)
+    # print(s.output)
+    # g = {0: {'s': 1, 'h': 4}, 1: {'h': 2}, 2: {'e': 3}, 4: {'e': 5}, 5: {'r': 6}, 6: {'s': 7}}
+    # f = {1: 0, 4: 0, 2: 4, 5: 0, 3: 5, 6: 0, 7: 1}
+    # o = {3: {'she', 'he'}, 5: {'he'}, 7: {'hers'}, 6: {'her'}}
+    # t = StringMatching.set_functions(g, f, o)
+    # print(t.match_pattern(text))

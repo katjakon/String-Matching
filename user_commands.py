@@ -23,7 +23,7 @@ class Search:
               "n": False},
              )
 
-    def __init__(self, pattern, pattern_file, input_text, i , v, n):
+    def __init__(self, pattern, pattern_file, input_text, i, v, n):
         self.pattern = pattern
         self.pattern_file = pattern_file
         self.input = input_text
