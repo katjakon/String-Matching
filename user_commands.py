@@ -14,16 +14,36 @@ class Search:
     INPUT_EXT = (".txt")
     PATTERN_EXT = (".json")
     DIRS = ("\\", "/")
-    DEMOS = ({
-              "pattern": [""],
-              "input_text": "She knows that she is here",
+    DEMOS = ({"pattern": ["she", "he", "his", "her"],
+              "input_text": "She saw her.",
+              "pattern_file": None},
+             {"pattern": ["she", "he", "his", "her"],
+              "input_text": "She saw her.",
               "pattern_file": None,
-              "i": True,
-              "v": False,
-              "n": False},
+              "i": True},
+             {"pattern": ["she", "he", "his", "her"],
+              "input_text": "She saw her.",
+              "pattern_file": None,
+              "n": True},
+             {"pattern": ["she", "he", "his", "her"],
+              "input_text": "demo/demo1.txt",
+              "pattern_file": None},
+             {"pattern": ["she", "he", "his", "her"],
+              "input_text": "demo/demo1.txt",
+              "pattern_file": None,
+              "v": True},
+             {"pattern": ["she", "he", "his", "her"],
+              "input_text": "demo/",
+              "pattern_file": None},
              )
 
-    def __init__(self, pattern, pattern_file, input_text, i, v, n):
+    def __init__(self,
+                 pattern,
+                 pattern_file,
+                 input_text,
+                 i=False,
+                 v=False,
+                 n=False):
         self.pattern = pattern
         self.pattern_file = pattern_file
         self.input = input_text
@@ -37,9 +57,9 @@ class Search:
         if self.i:
             commands += "-i "
         if self.v:
-            commands += "-v"
+            commands += "-v "
         if self.n:
-            commands += "-n"
+            commands += "-n "
         if self.pattern:
             commands += '--pattern "{}" ' .format(" ".join(self.pattern))
         else:
@@ -71,6 +91,8 @@ class Search:
 
     @staticmethod
     def print_matches(match_dict):
+        if not match_dict:
+            print("No matches found.")
         for match in match_dict:
             print("{}: {}".format(match,
                                   ",".join([str(i) for i in match_dict[match]])))
@@ -91,14 +113,17 @@ class Search:
                         print("line {}".format(count))
                         self.print_matches(matches)
                 else:
-                    matches = self.match.match_pattern(line, start=index, matches=matches)
+                    matches = self.match.match_pattern(line,
+                                                       start=index,
+                                                       matches=matches)
                 index += len(line)
                 count += 1
             if not self.v:
                 self.print_matches(matches)
 
     def _match_in_dir(self):
-        files = [file for file in os.listdir(self.input) if file.endswith(self.INPUT_EXT)]
+        files = [file for file in os.listdir(self.input)
+                 if file.endswith(self.INPUT_EXT)]
         for file in files:
             print(file)
             path = os.path.join(self.input, file)
@@ -130,5 +155,4 @@ class Search:
 
 
 if __name__ == "__main__":
-    s = Search(["she", "he","hers", "his"], None, "demo/demo1.txt", False, False, False)
-    s.run()
+    s = Search.demo()
