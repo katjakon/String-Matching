@@ -111,12 +111,14 @@ class Search:
             count = 1
             index = 0
             matches = dict()
+            found = False
             for line in file_in:
                 if self.i:
                     line = line.lower()
                 if self.v:
                     matches = self.match.match_pattern(line)
                     if matches:
+                        found = True
                         line_str = "Line {}".format(count)
                         print("{:-^30}".format(line_str))
                         self.print_matches(matches)
@@ -128,6 +130,8 @@ class Search:
                 count += 1
             if not self.v:
                 self.print_matches(matches)
+            elif not found:
+                self.print_matches(dict())
 
     def _match_in_dir(self):
         files = [file for file in os.listdir(self.input)
