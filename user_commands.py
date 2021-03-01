@@ -78,26 +78,23 @@ class Search:
     def _match_in_file(self, file=None):
         if file is None:
             file = self.input
-        path = os.path.join(file)
-        with open(path, encoding="utf-8") as file_in:
-            if self.v:
-                count = 1
-                for line in file_in:
-                    if self.i:
-                        line = line.lower()
+        with open(os.path.join(file), encoding="utf-8") as file_in:
+            count = 1
+            index = 0
+            matches = dict()
+            for line in file_in:
+                if self.i:
+                    line = line.lower()
+                if self.v:
                     matches = self.match.match_pattern(line)
                     if matches:
                         print("line {}".format(count))
                         self.print_matches(matches)
-                    count += 1
-            else:
-                at = 0
-                matches = dict()
-                for line in file_in:
-                    if self.i:
-                        line = line.lower()
-                    matches = self.match.match_pattern(line, start=at, matches=matches)
-                    at += len(line)
+                else:
+                    matches = self.match.match_pattern(line, start=index, matches=matches)
+                index += len(line)
+                count += 1
+            if not self.v:
                 self.print_matches(matches)
 
     def _match_in_dir(self):
@@ -133,5 +130,5 @@ class Search:
 
 
 if __name__ == "__main__":
-    s = Search(["she", "he","hers", "his"], None, "ushers", False, True, False)
-    s.demo()
+    s = Search(["she", "he","hers", "his"], None, "demo/demo1.txt", False, False, False)
+    s.run()
