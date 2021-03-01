@@ -11,52 +11,50 @@ from string_matching import StringMatching
 
 class Search:
 
-    INPUT_EXT = (".txt")
-    PATTERN_EXT = (".json")
+    INPUT_EXT = (".txt",)
+    PATTERN_EXT = (".json",)
     DIRS = ("\\", "/")
     DEMOS = ({"pattern": ["he"],
-              "input_text": "She saw her.",
-              "pattern_file": None},
+              "input_text": "She saw her."},
+             {"pattern": ["she"],
+              "input_text": "She saw her."},
              {"pattern": ["she"],
               "input_text": "She saw her.",
-              "pattern_file": None},
-             {"pattern": ["she"],
-              "input_text": "She saw her.",
-              "pattern_file": None,
               "i": True},
              {"pattern": ["her", "he"],
-              "input_text": "She saw her.",
-              "pattern_file": None},
+              "input_text": "She saw her."},
              {"pattern": ["she", "he", "his", "her"],
               "input_text": "She saw her.",
-              "pattern_file": None,
               "n": True},
              {"pattern": ["she", "he", "his", "her"],
-              "input_text": "demo/demo1.txt",
-              "pattern_file": None},
+              "input_text": "demo/demo1.txt"},
              {"pattern": ["she", "he", "his", "her"],
               "input_text": "demo/demo1.txt",
-              "pattern_file": None,
               "v": True},
              {"pattern": ["she", "he", "his", "her"],
-              "input_text": "demo/",
-              "pattern_file": None},
+              "input_text": "demo/"}
              )
 
     def __init__(self,
                  pattern,
-                 pattern_file,
                  input_text,
+                 f=False,
                  i=False,
                  v=False,
                  n=False):
         self.pattern = pattern
-        self.pattern_file = pattern_file
         self.input = input_text
+        self.f = f
         self.i = i
         self.v = v
         self.n = n
         self.match = self._create_match()
+
+        if self.f:
+            if len(self.pattern) > 1:
+                raise ValueError("More than one pattern file given.")
+            if not self.pattern[0].endswith(self.PATTERN_EXT):
+                raise ValueError("Can only read pattern from these file extensions: {}".format(*self.PATTERN_EXT))
 
     def __str__(self):
         commands = "search "
@@ -66,21 +64,19 @@ class Search:
             commands += "-v "
         if self.n:
             commands += "-n "
-        if self.pattern:
-            commands += "--pattern "
-            for pattern in self.pattern:
-                commands += '"{}" '.format(pattern)
-        else:
-            commands += "--pattern_file {} ".format(self.pattern_file)
+        if self.f:
+            commands += "-f"
         if self.input_from_dir or self.input_from_file:
-            commands += self.input
+            commands += "{} ".format(self.input)
         else:
-            commands += '"{}"'.format(self.input)
+            commands += '"{}" '.format(self.input)
+        for pattern in self.pattern:
+            commands += '"{}" '.format(pattern)
         return commands
 
     def _create_match(self):
-        if self.pattern_file:
-            return self.pattern_from_file()
+        if self.f:
+            return self._pattern_from_file()
         alg = "aho-corasick"
         if self.n:
             alg = "naive"
@@ -105,8 +101,8 @@ class Search:
         if not match_dict:
             print("No matches found.")
         for match in match_dict:
-            print("{}: {}".format(match,
-                                  ",".join([str(i) for i in match_dict[match]])))
+            match_index = map(lambda x: str(x), match_dict[match])
+            print("{}: {}".format(match, ",".join(match_index)))
 
     def _match_in_file(self, file=None):
         if file is None:
@@ -164,11 +160,8 @@ class Search:
             s = cls(**demo)
             print(s)
             s.run()
-            print("-"*60)
+            print()
 
 
 if __name__ == "__main__":
     s = Search.demo()
-    with open("demo/demo1.txt") as f:
-        content = f.read()
-        print(content[14:18])

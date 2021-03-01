@@ -19,23 +19,28 @@ def main():
     search_p.add_argument("-n", "-naive",  action="store_true")
     search_p.add_argument("-i", "-insensitive", action="store_true")
     search_p.add_argument("-v", "-verbose", action="store_true")
-    g = search_p.add_mutually_exclusive_group(required=True)
-    g.add_argument("--pattern")
-    g.add_argument("--pattern_file", type=argparse.FileType('r', encoding='UTF-8'))
-    search_p.add_argument("input_text")
+    search_p.add_argument("-f", "-from_file", action="store_true")
+    search_p.add_argument("input")
+    search_p.add_argument("pattern", nargs="+")
     args = parser.parse_args()
     if args.command == "search":
-        search = Search(pattern=args.pattern,
-                        pattern_file=args.pattern_file,
-                        text=args.input_text,
-                        i=args.i,
-                        v=args.v,
-                        n=args.n)
         try:
-            search.run()
-        except OSError as e:
+            search = Search(pattern=args.pattern,
+                            input_text=args.input,
+                            f=args.f,
+                            i=args.i,
+                            v=args.v,
+                            n=args.n)
+            try:
+                search.run()
+            except OSError as e:
+                print(e)
+                search_p.print_help()
+        except ValueError as e:
             print(e)
-            parser.print_help()
+            search_p.print_help()
+    elif args.command == "demo":
+        Search.demo()
 
 
 if __name__ == "__main__":
