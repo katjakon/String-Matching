@@ -14,15 +14,38 @@ class Search:
     INPUT_EXT = (".txt")
     PATTERN_EXT = (".json")
     DIRS = ("\\", "/")
+    DEMOS = ({
+              "pattern": [""],
+              "input_text": "She knows that she is here",
+              "pattern_file": None,
+              "i": True,
+              "v": False,
+              "n": False},
+             )
 
-    def __init__(self, pattern, pattern_file, text, i, v, n):
+    def __init__(self, pattern, pattern_file, input_text, i , v, n):
         self.pattern = pattern
         self.pattern_file = pattern_file
-        self.input = text
+        self.input = input_text
         self.i = i
         self.v = v
         self.n = n
         self.match = self._create_match()
+
+    def __str__(self):
+        commands = "search "
+        if self.i:
+            commands += "-i "
+        if self.v:
+            commands += "-v"
+        if self.n:
+            commands += "-n"
+        if self.pattern:
+            commands += '--pattern "{}" ' .format(" ".join(self.pattern))
+        else:
+            commands += "--pattern_file {} ".format(self.pattern_file)
+        commands += '"{}"'.format(self.input)
+        return commands
 
     def _create_match(self):
         if self.pattern_file:
@@ -101,7 +124,14 @@ class Search:
         else:
             self._match_in_str()
 
+    @classmethod
+    def demo(cls):
+        for demo in cls.DEMOS:
+            s = cls(**demo)
+            print(s)
+            s.run()
+
 
 if __name__ == "__main__":
     s = Search(["she", "he","hers", "his"], None, "ushers", False, True, False)
-    s.run()
+    s.demo()
