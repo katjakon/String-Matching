@@ -6,7 +6,7 @@ Created on Mon Feb 22 12:12:37 2021
 """
 import os
 
-from string_matching import StringMatching
+from string_matching import NaiveMatching, AhoCorasickMatching
 
 
 class Search:
@@ -64,12 +64,11 @@ class Search:
         return commands
 
     def _create_match(self):
-        alg = "aho-corasick"
-        if self.n:
-            alg = "naive"
         if self.i:
             self.pattern = [pattern.lower() for pattern in self.pattern]
-        return StringMatching(algorithm=alg, keywords=self.pattern)
+        if self.n:
+            return NaiveMatching(self.pattern)
+        return AhoCorasickMatching(self.pattern)
 
     @property
     def input_from_file(self):
