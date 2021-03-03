@@ -14,7 +14,6 @@ def main():
     parser = argparse.ArgumentParser()
     subs = parser.add_subparsers(dest='command')
     search_p = subs.add_parser("search", help="Search for keywords in a string, file or directory, type 'search -h' for more info")
-    save_p = subs.add_parser("save", help="Save a set of keywords to a file")
     demo_p = subs.add_parser("demo", help="Get a demo with examples for input and output")
     search_p.add_argument("-n", "-naive",  action="store_true")
     search_p.add_argument("-i", "-insensitive", action="store_true")
@@ -27,7 +26,6 @@ def main():
         try:
             search = Search(pattern=args.pattern,
                             input_text=args.input,
-                            f=args.f,
                             i=args.i,
                             v=args.v,
                             n=args.n)
@@ -41,6 +39,8 @@ def main():
             search_p.print_help()
     elif args.command == "demo":
         Search.demo()
+    else:
+        parser.print_help()
 
 
 if __name__ == "__main__":
