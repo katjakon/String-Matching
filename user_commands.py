@@ -12,7 +12,6 @@ from string_matching import StringMatching
 class Search:
 
     INPUT_EXT = (".txt",)
-    PATTERN_EXT = (".json",)
     DIRS = ("\\", "/")
     DEMOS = ({"pattern": ["he"],
               "input_text": "She saw her."},
@@ -38,23 +37,15 @@ class Search:
     def __init__(self,
                  pattern,
                  input_text,
-                 f=False,
                  i=False,
                  v=False,
                  n=False):
         self.pattern = pattern
         self.input = input_text
-        self.f = f
         self.i = i
         self.v = v
         self.n = n
         self.match = self._create_match()
-
-        if self.f:
-            if len(self.pattern) > 1:
-                raise ValueError("More than one pattern file given.")
-            if not self.pattern[0].endswith(self.PATTERN_EXT):
-                raise ValueError("Can only read pattern from these file extensions: {}".format(*self.PATTERN_EXT))
 
     def __str__(self):
         commands = "search "
@@ -64,8 +55,6 @@ class Search:
             commands += "-v "
         if self.n:
             commands += "-n "
-        if self.f:
-            commands += "-f"
         if self.input_from_dir or self.input_from_file:
             commands += "{} ".format(self.input)
         else:
@@ -75,8 +64,6 @@ class Search:
         return commands
 
     def _create_match(self):
-        if self.f:
-            return self._pattern_from_file()
         alg = "aho-corasick"
         if self.n:
             alg = "naive"
@@ -111,27 +98,26 @@ class Search:
             count = 1
             index = 0
             matches = dict()
-            found = False
             for line in file_in:
                 if self.i:
                     line = line.lower()
                 if self.v:
-                    matches = self.match.match_pattern(line)
-                    if matches:
-                        found = True
-                        line_str = "Line {}".format(count)
-                        print("{:-^30}".format(line_str))
-                        self.print_matches(matches)
+                    line_match = self.match.match_pattern(line)
+                    if line_match:
+                        matches[count] = line_match
                 else:
                     matches = self.match.match_pattern(line,
                                                        start=index,
                                                        matches=matches)
                 index += len(line)
                 count += 1
-            if not self.v:
+            if not matches or not self.v:
                 self.print_matches(matches)
-            elif not found:
-                self.print_matches(dict())
+            else:
+                for line in matches:
+                    line_str = "Line {}".format(line)
+                    print("{:-^30}".format(line_str))
+                    self.print_matches(matches[line])
 
     def _match_in_dir(self):
         files = [file for file in os.listdir(self.input)
@@ -146,9 +132,6 @@ class Search:
             self.input = self.input.lower()
         matches = self.match.match_pattern(self.input)
         self.print_matches(matches)
-
-    def _pattern_from_file(self):
-        pass
 
     def run(self):
         if self.input_from_file:
