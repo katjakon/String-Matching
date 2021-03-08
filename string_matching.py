@@ -37,7 +37,7 @@ class NaiveMatching:
         Returns:
             None.
         """
-        self._keywords = keywords
+        self._keywords = {keyword for keyword in keywords}
 
         try:
             assert all(isinstance(word, str) for word in self.keywords)
@@ -77,8 +77,8 @@ class NaiveMatching:
         for i, char in enumerate(input_text):
             for word in self.keywords:
                 if word == input_text[i:i+len(word)]:
-                    matches.setdefault(word, set())
-                    matches[word].add(start+i)
+                    matches.setdefault(word, [])
+                    matches[word].append(start+i)
         return matches
 
 
@@ -196,6 +196,6 @@ class AhoCorasickMatching(NaiveMatching):
             state = self._goto(state, char)
             if state in self._output:
                 for out in self._output[state]:
-                    matches.setdefault(out, set())
-                    matches[out].add(start+i-len(out)+1)
+                    matches.setdefault(out, [])
+                    matches[out].append(start+i-len(out)+1)
         return matches

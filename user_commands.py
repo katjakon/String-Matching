@@ -164,7 +164,7 @@ class Search:
     def update_matches(self, matches1, matches2):
         for match in matches1:
             if match in matches2:
-                matches1[match] = matches1[match].union(matches2[match])
+                matches1[match] += matches2[match]
         return {**matches2, **matches1}
 
     def _match_in_file(self, file=None):
@@ -230,10 +230,14 @@ class Search:
         """
         files = [file for file in os.listdir(self.input)
                  if file.endswith(self.INPUT_EXT)]
-        for file in files:
-            print("{:=^30}".format(file))
-            path = os.path.join(self.input, file)
-            self._match_in_file(path)
+        if files:
+            for file in files:
+                print("{:=^30}".format(file))
+                path = os.path.join(self.input, file)
+                self._match_in_file(path)
+        else:
+            print("No files with valid file extension found. "
+                  "Valid file extensions: {}".format(",".join(self.INPUT_EXT)))
 
     def _match_in_str(self):
         """Matches pattern in string and prints them.
