@@ -67,10 +67,12 @@ Command-line arguments:<br>
 ```search demo/demo1.txt "she" "he" "his" "her"```
 
 Output:<br>
-```he: 81,70,7,2
+```
+he: 81,70,7,2
 she: 80,1
 her: 70,2
-his: 84,15```
+his: 84,15
+```
 
 ## Additional Info
 If the text you want to search in ends with `.txt`, `\` or `/`, put it in a file instead of giving it directly as an argument. Otherwise the program will try to match in a file or a directory, likely causing an error message.
