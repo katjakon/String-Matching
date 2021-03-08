@@ -27,8 +27,9 @@ Put the words you want to search for after the input text. There needs to be at 
 search <input.txt> <keyword> (<keyword> ...)
 ``
 
-Same as above but put the name of the file after the _search_ command. The program will then look for matches in the file. By default, this will tell you the absolute indices of the keywords in the content of the file, including any whitespace at the end of a line and end-of-line characters.
-> This program only reads from text files. If your file name doesn't end with `.txt`, the program will treat it as a normal input text.
+Same as above but put the path to the the file after the _search_ command. The program will then look for matches in that file. By default, this will tell you the absolute indices of the keywords in the content of the file, including any whitespace at the end of a line and end-of-line characters.
+
+__Note:__ This program only reads from text files. If your file name doesn't end with `.txt`, the program will treat it as a normal input text.
 
 
 ### Match in a Directory
@@ -38,7 +39,8 @@ search <input/> <keyword> (<keyword> ...)
 
 Same as above but put the name of the directory followed by a slash or a backslash after the _search_ command.<br>
 This causes the program to search all files in the given directory for matches.
-> As this program only reads from text files, any file that doesn't end with `.txt` will be ignored.
+
+__Note:__ this program only reads from text files, any file that doesn't end with `.txt` will be ignored.
 
 ### Options
 + `-h`: Get a help message.
@@ -47,12 +49,28 @@ This causes the program to search all files in the given directory for matches.
 + `-v`: Get more verbose output when matching in files. This will tell you the line and the index in that line when a match is found.
 
 ## Demo and Examples
-Use`demo` as a command-line argument when running _main.py_ to get some example inputs and outputs.
+Use`demo` as a command-line argument when running _main.py_ to get some more example inputs and outputs.
 
 Command-line arguments:<br>
 ```search "She saw her." "he" ```
+
 Output:<br>
 ```he: 1,8```
+
+Command-line arguments:<br>
+```search -i "She saw her." "she"```
+
+Output:<br>
+```she: 0```
+
+Command-line arguments:<br>
+```search demo/demo1.txt "she" "he" "his" "her"```
+
+Output:<br>
+```he: 81,70,7,2
+she: 80,1
+her: 70,2
+his: 84,15```
 
 ## Additional Info
 If the text you want to search in ends with `.txt`, `\` or `/`, put it in a file instead of giving it directly as an argument. Otherwise the program will try to match in a file or a directory, likely causing an error message.
