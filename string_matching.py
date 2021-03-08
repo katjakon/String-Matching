@@ -18,7 +18,7 @@ class NaiveMatching:
         keywords (list): List of strings to search for.
 
     Methods:
-        match_pattern(input_text, start=0, matches=None):
+        match_pattern(input_text, start=0):
             Find start indices of keywords in a string.
     """
 
@@ -66,11 +66,6 @@ class NaiveMatching:
             start (int):
                 Is added to index where keyword is found.
                 The default is 0.
-            matches (dict):
-                An existing match dictionary with instance's keywords
-                as keys, and sets of integers as values. When default
-                is used, an empty dict is used.
-                The default is None.
 
         Returns:
             dict:
@@ -78,8 +73,7 @@ class NaiveMatching:
                 of integers that indicate indices where the keyword
                 starts in input_text
         """
-        if matches is None:
-            matches = dict()
+        matches = dict()
         for i, char in enumerate(input_text):
             for word in self.keywords:
                 if word == input_text[i:i+len(word)]:
@@ -98,7 +92,7 @@ class AhoCorasickMatching(NaiveMatching):
         keywords (list): List of strings to search for.
 
     Methods:
-        match_pattern(input_text, start=0, matches=None):
+        match_pattern(input_text, start=0):
             Find start indices of keywords in a string.
     """
 
@@ -193,9 +187,8 @@ class AhoCorasickMatching(NaiveMatching):
                 return self._part_goto[state][char]
         return False
 
-    def match_pattern(self, input_text, start=0, matches=None):
-        if matches is None:
-            matches = dict()
+    def match_pattern(self, input_text, start=0):
+        matches = dict()
         state = 0
         for i, char in enumerate(input_text):
             while self._goto(state, char) is False:

@@ -45,7 +45,7 @@ class Search:
             Print indices of patterns in input
             according to instance's mode
         demo:
-            Get a demo of different mode's that can be used with
+            Get a demo of different modes that can be used with
             examples and output.
     """
 
@@ -161,6 +161,12 @@ class Search:
             match_index = map(lambda x: str(x), match_dict[match])
             print("{}: {}".format(match, ",".join(match_index)))
 
+    def update_matches(self, matches1, matches2):
+        for match in matches1:
+            if match in matches2:
+                matches1[match] = matches1[match].union(matches2[match])
+        return {**matches2, **matches1}
+
     def _match_in_file(self, file=None):
         """Finds matches for pattern in file and prints them.
 
@@ -195,11 +201,12 @@ class Search:
                         matches[count] = line_match
                 else:
                     # If not verbose, we need to keep track of
-                    # current index by using
-                    # start and matches arg of match_pattern method.
-                    matches = self._match.match_pattern(line,
-                                                        start=index,
-                                                        matches=matches)
+                    # current index by using the start parameter
+                    # of match_pattern method.
+                    new_matches = self._match.match_pattern(line,
+                                                            start=index)
+                    # Update matches
+                    matches = self.update_matches(new_matches, matches)
                 index += len(line)
                 count += 1
             # Print no matches or matches without lines.
@@ -259,10 +266,12 @@ class Search:
         """Demo of different functionalities of Search class"""
         for demo in cls.DEMOS:
             search = cls(**demo)
+            print("\tCall:")
             print(search)
+            print("\tOutput:")
             search.run()
             print()
 
 
 if __name__ == "__main__":
-    Search.demo()
+    s = Search.demo()
