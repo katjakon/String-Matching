@@ -18,13 +18,15 @@ For all commands and functionalities described below, run _main.py_.
 ``
 search <input text> <keyword> (<keyword> ...)
 ``
-Type `search` to indicate you want to search for keywords. After the _search_ command follows the text you want to search in. If the text contains whitespace, make sure to wrap it in quotes.<br>
-Put the words you want to search for after the input text. There needs to be at least one keyword but you can put more in. Keywords are seperated by a space. Again, if your keyword contains whitespace, wrapt it in quotes.<br>
+
+Use `search` as a command-line argument to indicate you want to search for keywords. After the _search_ command follows the text you want to search in. If the text contains whitespace, make sure to wrap it in quotes.<br>
+Put the words you want to search for after the input text. There needs to be at least one keyword but you can put more in. Keywords are seperated by a space. Again, if your keyword contains whitespace, wrap it in quotes.<br>
 
 ### Match in a File
 ``
 search <input.txt> <keyword> (<keyword> ...)
 ``
+
 Same as above but put the name of the file after the _search_ command. The program will then look for matches in the file. By default, this will tell you the absolute indices of the keywords in the content of the file, including any whitespace at the end of a line and end-of-line characters.
 > This program only reads from text files. If your file name doesn't end with `.txt`, the program will treat it as a normal input text.
 
@@ -33,6 +35,7 @@ Same as above but put the name of the file after the _search_ command. The progr
 ``
 search <input/> <keyword> (<keyword> ...)
 ``
+
 Same as above but put the name of the directory followed by a slash or a backslash after the _search_ command.<br>
 This causes the program to search all files in the given directory for matches.
 > As this program only reads from text files, any file that doesn't end with `.txt` will be ignored.
@@ -45,6 +48,11 @@ This causes the program to search all files in the given directory for matches.
 
 ## Demo and Examples
 Use`demo` as a command-line argument when running _main.py_ to get some example inputs and outputs.
+
+Command-line arguments:<br>
+```search "She saw her." "he" ```
+Output:<br>
+```he: 1,8```
 
 ## Additional Info
 If the text you want to search in ends with `.txt`, `\` or `/`, put it in a file instead of giving it directly as an argument. Otherwise the program will try to match in a file or a directory, likely causing an error message.
