@@ -44,4 +44,13 @@ This causes the program to search all files in the given directory for matches.
 + `-v`: Get more verbose output when matching in files. This will tell you the line and the index in that line when a match is found.
 
 ## Demo and Examples
-Run _main.py_ and type `demo` to get some example inputs and outputs.
+Use`demo` as a command-line argument when running _main.py_ to get some example inputs and outputs.
+
+## Additional Info
+If the text you want to search in ends with `.txt`, `\` or `/`, put it in a file instead of giving it directly as an argument. Otherwise the program will try to match in a file or a directory, likely causing an error message.
+
+## Author
+Katja Konermann<br>
+Martikelnummer: 802658<br>
+<br>
+Ein Projekt für das Seminar _Programmierung I_ im Wintersemester 20/21.
