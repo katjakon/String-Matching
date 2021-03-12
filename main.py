@@ -4,7 +4,7 @@
 """
 Main file of the String Matching Programm.
 
-Command line input is handled here by argparse.
+Command line input is handled by argparse.
 """
 import argparse
 
@@ -37,29 +37,27 @@ def main():
     search_p.add_argument("input",
                           help="Text to search in, "
                           "can be a string, file or directory")
-    search_p.add_argument("pattern",
+    search_p.add_argument("keyword",
                           nargs="+",
                           help="Patterns to search for.")
     args = parser.parse_args()
-    if args.command == "search":
-        try:
-            search = Search(pattern=args.pattern,
+    try:
+        if args.command == "search":
+            search = Search(pattern=args.keyword,
                             input_text=args.input,
                             insensitive=args.i,
                             verbose=args.v,
                             naive=args.n)
-            try:
-                search.run()
-            except OSError as error:
-                print(error)
-                search_p.print_help()
-        except ValueError as error:
-            print(error)
-            search_p.print_help()
-    elif args.command == "demo":
-        Search.demo()
-    else:
-        parser.print_help()
+            search.run()
+        elif args.command == "demo":
+            Search.demo()
+        else:
+            parser.print_help()
+    # Catch errors related to handling files and directories
+    # and errors that might occur when creatin Search object.
+    except (OSError, ValueError) as error:
+        print(error)
+        print(parser.print_help())
 
 
 if __name__ == "__main__":
