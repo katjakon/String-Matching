@@ -15,7 +15,7 @@ class NaiveMatching:
     algorithm.
 
     Attributes:
-        keywords (list): List of strings to search for.
+        keywords (set): Set of strings to search for.
 
     Methods:
         match_pattern(input_text, start=0):
@@ -27,7 +27,7 @@ class NaiveMatching:
         Constructs necessary attributes for String Matching Instance.
 
         Args:
-            keywords (list): List of strings to search for.
+            keywords (list): Iterable of strings to search for.
 
         Raises:
             ValueError:
@@ -37,7 +37,7 @@ class NaiveMatching:
         Returns:
             None.
         """
-        self._keywords = {keyword for keyword in keywords}
+        self._keywords = set(keywords)
 
         try:
             assert all(isinstance(word, str) for word in self.keywords)
@@ -69,7 +69,7 @@ class NaiveMatching:
 
         Returns:
             dict:
-                keys are the instance's keywords, values are sets
+                keys are the instance's keywords, values are lists
                 of integers that indicate indices where the keyword
                 starts in input_text
         """
@@ -85,7 +85,7 @@ class NaiveMatching:
 class AhoCorasickMatching(NaiveMatching):
 
     """
-    A class that represents string matching by using an efficient
+    A class that represents string matching by using the
     algorithm described by Aho and Corasick.
 
     Attributes:
@@ -96,7 +96,7 @@ class AhoCorasickMatching(NaiveMatching):
             Find start indices of keywords in a string.
     """
 
-    def __init__(self, keywords=None):
+    def __init__(self, keywords):
         super().__init__(keywords)
         self._part_goto = dict()
         self._output = dict()
@@ -177,7 +177,6 @@ class AhoCorasickMatching(NaiveMatching):
         Returns:
             An Integer indicating a state if transition is possible,
             False otherwise.
-
         """
         if state in self._part_goto:
             # Transitions from start state don't fail.
@@ -191,11 +190,14 @@ class AhoCorasickMatching(NaiveMatching):
         matches = dict()
         state = 0
         for i, char in enumerate(input_text):
+            # Find possible transition.
             while self._goto(state, char) is False:
                 state = self._fail[state]
             state = self._goto(state, char)
+            # Save index if state is in output.
             if state in self._output:
                 for out in self._output[state]:
                     matches.setdefault(out, [])
+                    # Find start index by subtracting length of keyword.
                     matches[out].append(start+i-len(out)+1)
         return matches

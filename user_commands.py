@@ -105,11 +105,11 @@ class Search:
     def _create_match(self):
         """Creates a string matching object according to instance's attribute.
 
-        If self.i is True. strings in self.pattern will be converted to
-        lowercase when creating matching object.
+        If self.insensitive is True. strings in self.pattern will be converted
+        to lowercase when creating matching object.
 
         Returns:
-            NaiveMatching object if self.n is True,
+            NaiveMatching object if self.naive is True,
             otherwise returns AhoCorasickMatching object.
         """
         if self.insensitive:
@@ -124,8 +124,8 @@ class Search:
 
         Returns:
             bool:
-                If input ends with classes file extensions, returns True.
-                Returns False otherwise.
+                True if self.input ends with classes file extension.
+                False otherwise.
         """
         if self.input.endswith(self.INPUT_EXT):
             return True
@@ -137,8 +137,8 @@ class Search:
 
         Returns:
             bool:
-                If input ends with / or \\, returns True.
-                Returns False otherwise.
+                True if input ends with / or \\.
+                False otherwise.
         """
         if self.input.endswith(self.DIRS):
             return True
@@ -158,17 +158,43 @@ class Search:
         if not match_dict:
             print("No matches found.")
         for match in match_dict:
-            match_index = map(lambda x: str(x), match_dict[match])
-            print("{}: {}".format(match, ",".join(match_index)))
+            string_index = [str(index) for index in match_dict[match]]
+            print("{}: {}".format(match, ",".join(string_index)))
 
-    def update_matches(self, matches1, matches2):
+    @staticmethod
+    def _update_matches(matches1, matches2):
+        """Update two match dictionaries by extending list of indices.
+
+        Extend lists of integers for the same key. For example, for
+        {"she": [1], "me": [5]} and
+        {"she": [9], his: [15]}
+        returns {"she": [1, 9], "his": [15], "me": [5]}
+
+        Args:
+            matches1 (dict):
+                A match dictionary with words as keys and lists of
+                integers as values.
+            matches2 (dict):
+                A match dictionary with words as keys and lists of
+                integers as values.
+
+        Returns:
+            dict: the new updated dictionary
+        """
         for match in matches1:
             if match in matches2:
                 matches1[match] += matches2[match]
-        return {**matches2, **matches1}
+        matches2.update(matches1)
+        return matches2
 
     def _match_in_file(self, file=None):
-        """Finds matches for pattern in file and prints them.
+        if file is None:
+            file = self.input
+        if file.endswith(".txt"):
+            self._match_txt_file(file)
+
+    def _match_txt_file(self, file):
+        """Finds matches for pattern in text file and prints them.
 
         If verbose is True, prints index of matches in each line. Otherwise
         prints index in file content, counting EOL characters.
@@ -181,8 +207,6 @@ class Search:
         Returns:
             None.
         """
-        if file is None:
-            file = self.input
         with open(os.path.join(file), encoding="utf-8") as file_in:
             # Line count.
             count = 1
@@ -206,7 +230,7 @@ class Search:
                     new_matches = self._match.match_pattern(line,
                                                             start=index)
                     # Update matches
-                    matches = self.update_matches(new_matches, matches)
+                    matches = self._update_matches(new_matches, matches)
                 index += len(line)
                 count += 1
             # Print no matches or matches without lines.
@@ -278,4 +302,4 @@ class Search:
 
 
 if __name__ == "__main__":
-    s = Search.demo()
+    Search.demo()
