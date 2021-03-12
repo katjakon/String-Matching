@@ -294,8 +294,10 @@ class Search:
         """Demo of different functionalities of Search class"""
         for demo in cls.DEMOS:
             search = cls(**demo)
+            # Command Line input.
             print("\tCall:")
             print(search)
+            # Command line output.
             print("\tOutput:")
             search.run()
             print()
