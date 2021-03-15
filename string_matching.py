@@ -74,8 +74,8 @@ class NaiveMatching:
                 starts in input_text
         """
         matches = dict()
-        for i, char in enumerate(input_text):
-            for word in self.keywords:
+        for word in self.keywords:
+            for i in range(len(input_text)-len(word)+1):
                 if word == input_text[i:i+len(word)]:
                     matches.setdefault(word, [])
                     matches[word].append(start+i)
