@@ -158,7 +158,7 @@ class Search:
         if not match_dict:
             print("No matches found.")
         for match in match_dict:
-            string_index = [str(index) for index in match_dict[match]]
+            string_index = map(str, match_dict[match])
             print("{}: {}".format(match, ",".join(string_index)))
 
     @staticmethod
