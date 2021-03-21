@@ -57,7 +57,7 @@ def main():
     # and errors that might occur when creatin Search object.
     except (OSError, ValueError) as error:
         print(error)
-        print(parser.print_help())
+        parser.print_help()
 
 
 if __name__ == "__main__":

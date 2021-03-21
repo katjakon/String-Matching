@@ -52,7 +52,7 @@ class NaiveMatching:
     def keywords(self):
         return self._keywords
 
-    def match_pattern(self, input_text, start=0, matches=None):
+    def match_pattern(self, input_text, start=0):
         """Returns the indices of self.keywords in a string.
 
         Given a text, find all indices where the instance's keywords begin.
